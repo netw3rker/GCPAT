@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Migrate to config.
+ */
+function lockr_update_8301() {
+  $configFactory = \Drupal::service('config.factory');
+  $state = \Drupal::service('state');
+  $config = $configFactory->getEditable('lockr.settings');
+  // There was a patch on d.o for the 8.x-2.x branch that added support
+  // for storing Lockr configuration in config. The schema is similar
+  // but not exactly the same, so we modify the config object slightly.
+  if (!$config->get('region') && $region = $state->get('lockr.region')) {
+    $config->set('region', $region);
+  }
+  if ($config->get('custom')) {
+    $config->set('cert_path', $config->get('custom_cert'));
+    $config->clear('custom_cert');
+  }
+  elseif ($state->get('lockr.custom', FALSE)) {
+    $config->set('custom', TRUE);
+    $config->set('cert_path', $state->get('lockr.cert'));
+  }
+  $config->save();
+}
+
+/**
+ * Migrate wrapping keys from key to secret info config.
+ */
+function lockr_update_8302() {
+  $key_repository = \Drupal::service('key.repository');
+  $configFactory = \Drupal::service('config.factory');
+  $keys = $key_repository->getKeysByProvider('lockr');
+  $config = $configFactory->getEditable('lockr.secret_info');
+  foreach ($keys as $key) {
+    $name = $key->id();
+    if ($config->get($name)) {
+      continue;
+    }
+    $provider = $key->getKeyProvider();
+    $key_config = $provider->getConfiguration();
+    if (isset($key_config['encoded'])) {
+      $config->set("{$name}.wrapping_key", $key_config['encoded']);
+    }
+  }
+  $config->save();
+}
+
+/**
+ * Install Lockr secret entity.
+ */
+function lockr_update_8400() {
+  $entityType = \Drupal::service('entity_type.manager')
+    ->getDefinition('lockr_secret');
+  \Drupal::service('entity.definition_update_manager')
+    ->installEntityType($entityType);
+}
+
+/**
+ * Migrate wrapping keys from basic config to entities.
+ */
+function lockr_update_8401() {
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $storage = $entity_type_manager->getStorage('lockr_secret');
+  $config_factory = \Drupal::service('config.factory');
+  $config = $config_factory->getEditable('lockr.secret_info');
+  foreach ($config->get() as $name => $info) {
+    $secret = $storage->load($name);
+    if (is_null($secret)) {
+      $secret = $storage->create([
+        'id' => $name,
+        'key_id' => $name,
+      ]);
+    }
+    $secret->setInfo($info);
+    $secret->save();
+  }
+  $config->delete();
+}

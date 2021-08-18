@@ -1,0 +1,106 @@
+# Schema for the configuration files of the lockr module.
+
+key.type.lockr_encryption:
+  type: mapping
+  label: 'Lockr Encryption key type settings'
+  mapping:
+    key_size:
+      type: integer
+      label: 'Key size'
+
+key.provider.lockr:
+  type: sequence
+
+lockr.settings:
+  type: config_object
+  label: 'Lockr settings'
+  mapping:
+    region:
+      type: string
+      label: 'The region of this site'
+    custom:
+      type: boolean
+      label: 'TRUE if this site uses a custom certificate'
+    cert_path:
+      type: string
+      label: 'Path to a custom cert if present'
+
+lockr.lockr_secret.*:
+  type: config_entity
+  label: 'Lockr secret info'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    key_id:
+      type: string
+      label: 'Key ID'
+    info:
+      type: sequence
+      label: 'Secret Info'
+
+lockr.ui_text:
+  type: config_object
+  label: 'Lockr UI text'
+  mapping:
+    admin_page:
+      type: mapping
+      label: 'Admin page text settings'
+      mapping:
+        header:
+          type: mapping
+          label: 'Header text'
+          mapping:
+            not_registered:
+              type: string
+              label: 'Text for unregistered users'
+            registered:
+              type: string
+              label: 'Text for registered users'
+        status:
+          type: mapping
+          label: 'Status messages'
+          mapping:
+            cert:
+              type: mapping
+              label: 'Messages about the certificate'
+              mapping:
+                valid:
+                  type: string
+                  label: 'Message for valid certificates'
+                not_valid:
+                  type: string
+                  label: 'Message for invalid certificates'
+            path:
+              type: mapping
+              label: 'Messages about the path for storing certificates'
+              mapping:
+                exists:
+                  type: string
+                  label: 'Directory found'
+                invalid:
+                  type: string
+                  label: 'Directory not found'
+            registered:
+              type: string
+              label: 'Status message for registered users'
+            not_registered:
+              type: string
+              label: 'Status message for unregistered users'
+            cc:
+              type: mapping
+              label: 'Credit card'
+              mapping:
+                has:
+                  type: string
+                  label: 'Credit card set message'
+                missing:
+                  type: mapping
+                  label: 'Missing credit card messages'
+                  mapping:
+                    required:
+                      type: string
+                      label: 'Missing credit card message for non-partners'
+                    partner:
+                      type: string
+                      label: 'Missing credit card message for partners'
