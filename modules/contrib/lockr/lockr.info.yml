@@ -1,0 +1,14 @@
+name: Lockr
+description: Plugin for the Key module to integrate with Lockr, a hosted offsite key management platform.
+package: Security
+configure: lockr.admin
+
+type: module
+core_version_requirement: '^8 || ^9'
+
+dependencies: [key]
+
+# Information added by Drupal.org packaging script on 2021-05-21
+version: '4.0.1'
+project: 'lockr'
+datestamp: 1621618627

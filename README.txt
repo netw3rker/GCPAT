@@ -1,6 +1,4 @@
 
-HI GCP AT folks!
-
 CONTENTS OF THIS FILE
 ---------------------
 
