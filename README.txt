@@ -1,4 +1,4 @@
-Hi Tufts team!
+Hi Rice team!
 
 CONTENTS OF THIS FILE
 ---------------------
