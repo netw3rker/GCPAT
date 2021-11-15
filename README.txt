@@ -1,4 +1,3 @@
-Hi Rice team!
 
 CONTENTS OF THIS FILE
 ---------------------
